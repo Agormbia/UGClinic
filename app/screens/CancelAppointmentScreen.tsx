@@ -2,19 +2,36 @@ import { StyleSheet, TouchableOpacity, View, TextInput } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { useState } from 'react';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { useAppointments } from '@/app/context/AppointmentContext';
+import { CancellationSuccess } from '@/components/CancellationSuccess';
 
 type CancellationReason = 'Rescheduling' | 'Weather Conditions' | 'Unexpected Work' | 'Others';
 
 export default function CancelAppointmentScreen() {
+	const { cancelAppointment } = useAppointments();
+	const [showSuccess, setShowSuccess] = useState(false);
+	const params = useLocalSearchParams();
 	const [selectedReason, setSelectedReason] = useState<CancellationReason | null>(null);
 	const [customReason, setCustomReason] = useState('');
 
 	const reasons: CancellationReason[] = ['Rescheduling', 'Weather Conditions', 'Unexpected Work', 'Others'];
 
+	const handleCancellation = () => {
+		const appointmentId = params.appointmentId ? parseInt(Array.isArray(params.appointmentId) ? params.appointmentId[0] : params.appointmentId) : 0;
+		cancelAppointment(appointmentId);
+		setShowSuccess(true);
+	};
+
+	const handleAnimationComplete = () => {
+		setShowSuccess(false);
+		router.back();
+	};
+
 	return (
 		<ThemedView style={styles.container}>
+			{showSuccess && <CancellationSuccess onAnimationComplete={handleAnimationComplete} />}
 			<View style={styles.header}>
 				<TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
 					<Ionicons name="chevron-back" size={24} color="#4285F4" />
@@ -55,7 +72,10 @@ export default function CancelAppointmentScreen() {
 				/>
 			</View>
 
-			<TouchableOpacity style={styles.cancelButton}>
+			<TouchableOpacity 
+				style={styles.cancelButton} 
+				onPress={handleCancellation}
+			>
 				<ThemedText style={styles.cancelButtonText}>Cancel Appointment</ThemedText>
 			</TouchableOpacity>
 		</ThemedView>

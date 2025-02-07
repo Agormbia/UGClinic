@@ -2,14 +2,13 @@
 	"users": [
 		{
 			"studentId": 10971611,
-			"StudentName":"Wilson",
+			"StudentName": "Wilson",
 			"pin": 36451,
 			"role": "student"
 		},
-
 		{
 			"studentId": 10984847,
-			"StudentName":"Kwame",
+			"StudentName": "Kwame",
 			"pin": 34523,
 			"role": "student"
 		}
